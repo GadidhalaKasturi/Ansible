@@ -1,0 +1,16 @@
+---
+- hosts: localhost
+  connection: local
+  tasks: 
+  - name: create VM
+    azure_rm_virtualmachine:
+      resource_group: testingGroup
+      name: "ansible-instance"
+      region: East US
+      az_username: "{{ username }}"
+      az_password: "{{ password }}"
+      image:
+        offer: Ubuntu
+        version: latest
+
+

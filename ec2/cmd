@@ -1,0 +1,7 @@
+Azure collection
+
+preq
+ansible-galaxy collection install azure.azcollection
+
+vm creation
+azure.azcollection.azure_rm_virtualmachine

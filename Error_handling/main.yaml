@@ -1,0 +1,28 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+    - name: check the openssl and openssh latest in manage nodes
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: latest
+      loop:
+        - openssl
+        - openssh
+      ignore_errors: yes  #it ignores the errors and proceed to next steps
+    - name: verify docker is installed
+      ansible.buildin.command: docker --version
+      registry: outptut   # the rror outout is stored in this
+      ignore_errors: yes
+    #- ansible.builtin.debug:
+    #    var: output  # it's shows the what error we getting in it
+    - name: install Docker
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
+      when:
+        output.failed
+
+
+

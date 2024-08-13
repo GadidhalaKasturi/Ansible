@@ -1,0 +1,23 @@
+---
+- hosts: localhost
+  connection: local
+
+  tasks:
+  - name: create a VM in azure with an image id
+    azure_rm_virtualmachine:
+      resource_group: taskGroup
+      name: "{{ item.name }}"
+      vm_size: Standard_B1s
+      region: East US
+      az_username: "{{ username }}"
+      az_password: "{{ password }}"
+      image: 
+        id: "{{ item.image }}"
+      tags:
+        environment: "{{ item.name }}"
+    loop:
+      - { image: "imageidshoulpasshere", name: "manage_node_1" }
+      - { image: "imageidshoulpasshere", name: "manage_node_2" }
+      - { image: "imageidshoulpasshere", name: "manage_node_2" }
+
+

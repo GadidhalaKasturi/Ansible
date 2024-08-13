@@ -1,0 +1,9 @@
+prerequisites
+
+1. pip install boto3
+2. ansible-galaxy collection install amazon.aws
+3. Create a password for vault
+    openssl rand -base64 2048 > vault.pass
+4. Add your AWS credentials using the below vault command
+    ansible-vault create group_vars/all/pass.yml --vault-password-file vault.pass
+    

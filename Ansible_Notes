@@ -1,0 +1,140 @@
+Ansible: 
+It is an open source IT automation engine that automates
+    1. configuration management
+    2. provisiong (creating any vm, s3, etc)
+    3. application deployment
+    4. orchestration
+
+-> Ansible contains the playbook it written in yaml
+
+Installation:
+    1. Python
+    2. Install Ansible (using pip install ansible) for windows need wsl - control node
+
+Ansible:
+    1. control node: where the ansible is installed (which means the localhost)
+    2. manage nodes: where the execution part need to be done (like any VM) - python must (no need ansible)
+
+---------------------------------------------------------------------------------------------------------------
+
+Passwordless Authentication:
+1. Every time we can't login by using the credentials. For that we can make passwordless authentication. 
+2. Two ways we can do:
+    1. ssh keys
+    2. password
+
+cmd: 
+1. ssh keys:  ssh-copy-id -f "-o IdentityFile <PATH OF PEM FILE>" <ubuntu@public IP Address> 
+              -> To check VM is connected: ssh <ubuntu@public IP Address>
+2. password: 1. ssh -i <PATH OF PEM FILE> <ubuntu@public IP Address>
+             2. sudo vim /etc/ssh/sshd_config.d/60-cloudimg-settings.conf -> update: PasswordAuthentication yes
+             3. sudo systemctl restart ssh
+
+---------------------------------------------------------------------------------------------------------------
+
+Inventory File:
+It defines the hosts (remote systems) that you want to manage and group those hosts belongs to.
+1. static inventory file
+2. dynamic inventory file
+
+Ex: inventory.ini
+[web]
+example1.com
+example2.com
+
+[app]
+example3.com
+example4.com
+
+-> sudo vim inventory.ini -->(/etc/ansible/hosts)
+
+Adhoc Inventory:
+sample execution can done through this
+1. ansible -i inventory.ini -m ping all    # it ping all the hosts in that file
+2. ansible -i inventory.ini -m shell -a "apt install openjdk all"
+use:
+ansible-playbook -i inventory <Adhoc command or Playbook.yml>
+
+---------------------------------------------------------------------------------------------------------------
+
+Ansible Playbook:
+It is a YAML File that defines series action to be executed on manage nodes. It contains one or more "plays" that map group of hosts to roles.
+
+Playbook, Play, Module, Tasks
+
+-> ansible-playbool -i inventory <playbook_name>
+Ex: ansible-playbool -i inventory main.yaml
+
+Ex: main.yaml
+---
+- name: update the web
+  hosts: web
+  remote-user: root
+
+  tasks:
+  - name: Ensure apache is at the latest version
+    ansible.builtin.yum:
+        name: httpd
+        state: latest
+  - name: Write the apache config file
+    ansible.builtin.template:
+      src: /srv/httpd.j2
+      dest: /etc/httpd.conf
+
+- name: update the app
+  hosts: app
+  remote_user: root
+
+  tasks:
+  - name:  Ensure postgresql is at the latest version
+    ansible.builtin.yum:
+      name: postgresql
+      state: latest
+
+  - name: Ensure that postgresql is started
+    ansible.builtin.service:
+      name: postgresql
+      state: started
+
+Collections:
+Collections are a distribution format for Ansible content. They bundle together multiple roles, modules, plugins, and other Ansible artifacts. Collections make it easier to share and reuse Ansible content. 
+
+---------------------------------------------------------------------------------------------------------------
+
+Ansible Roles:
+An Ansible role is a reusable, self-contained unit of automation that is used to organize and manage tasks, variables, files, templates, and handlers in a structured way.
+
+Files, Handlers, Vars, Tasks, Templates, Defaults, Meta, Library
+
+Mainly for : Readability, Modularity, Sharing
+
+Ansible-galaxy
+
+1. Ansible-galaxy role init <role_name>     # to create roles
+2. Ansible-galaxy role import <git_username> <role_name>       # from git to galaxy import
+
+---------------------------------------------------------------------------------------------------------------
+
+Ansibel Provisioning: 
+
+1. pip isntal boto3
+2. ansible-galaxy collection install amazon.aws
+
+setup vault:       # passowrd protection
+1. openssl rand -base64 2048 > vault.pass
+2. ansible-vault create group_vars/all/pass.yml --vault-password-file vault.pass
+
+---------------------------------------------------------------------------------------------------------------
+
+Error Handling:
+
+default: In ansible executes the tasks only when one taks complete and success and procees with the other tasks
+ignore_errors: yes
+
+---------------------------------------------------------------------------------------------------------------
+
+Policy-as-code:
+Policy as Code (PaC) in DevSecOps refers to the practice of defining and managing security policies through code. This approach enables automated, consistent, and scalable enforcement of security controls and compliance requirements across the software development lifecycle.
+
+
+
